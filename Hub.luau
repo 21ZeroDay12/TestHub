@@ -7,6 +7,13 @@ local character
 local humanoidRootPart
 local AR
 local Val
+local playerName = ""
+local playerName2 = ""
+local und = false
+local duration = 0
+local bang
+
+
 function Variables()
     workspace = game.Workspace
     player = game.Players.LocalPlayer
@@ -28,12 +35,9 @@ local DJP = character.Humanoid.JumpPower
 local DWS = character.Humanoid.WalkSpeed
 
 -- Глобальные переменные для сохранения значений
-local playerName = ""
-local playerName2 = ""
-local und = false
-local duration = 0
 
 local function Find(Name)
+    Variables()
     for i,v in pairs(character.Parent:GetDescendants()) do
         if v:IsA("Model") then
             if string.find(tostring(v), Name) and v:FindFirstChild("HumanoidRootPart") then
@@ -87,6 +91,10 @@ local Character = Window:MakeTab({
 	PremiumOnly = false
 })
 
+local Humanoid = Character:AddSection({
+	Name = "Humanoid"
+})
+
 local WalkSpeed = Character:AddSlider({
 	Name = "WalkSpeed",
 	Min = 0,
@@ -122,7 +130,7 @@ Character:AddButton({
   	end    
 })
 
-local Section = Character:AddSection({
+local Sit = Character:AddSection({
 	Name = "Sit"
 })
 
@@ -140,8 +148,11 @@ local Teleporting = Window:MakeTab({
 	PremiumOnly = false
 })
 
-Teleporting:AddTextbox({
+local Teleporting1 = Teleporting:AddSection({
+	Name = "Teleporting"
+})
 
+Teleporting:AddTextbox({
 	Name = "Name of Player",
 	Default = "",
 	TextDisappear = false,
@@ -195,9 +206,10 @@ Teleporting:AddButton({
   	end    
 })
 
-local Section = Teleporting:AddSection({
+local Tool = Teleporting:AddSection({
 	Name = "Tool"
 })
+
 
 Teleporting:AddButton({
 	Name = "Give tool",
@@ -223,6 +235,10 @@ local Troll = Window:MakeTab({
 	PremiumOnly = false
 })
 
+local Player = Troll:AddSection({
+	Name = "Player"
+})
+
 Troll:AddTextbox({
 	Name = "Player",
 	Default = "",
@@ -232,13 +248,14 @@ Troll:AddTextbox({
 	end	 
 })
 
-
-
+local Actions = Troll:AddSection({
+	Name = "Actions"
+})
 
 Troll:AddButton({
 	Name = "Sit on",
 	Callback = function()
-        --Variables()
+        Variables()
         while und ~= true do
             game.Workspace.Gravity = 0
             character.Humanoid.Sit = true
@@ -257,15 +274,15 @@ Troll:AddButton({
 Troll:AddButton({
 	Name = "Bang",
 	Callback = function()
-        --Variables()
+        Variables()
         print(playerName2)
         bangAnim = Instance.new("Animation")
         bangAnim.AnimationId = "rbxassetid://5918726674"
         bang = character.Humanoid:LoadAnimation(bangAnim)
         bang:Play(0.1, 1, 1)
         bang:AdjustSpeed(1)
+        game.Workspace.Gravity = 0
         while und ~= true do
-            game.Workspace.Gravity = 0
             humanoidRootPart.CFrame = game.Players[playerName2].Character.HumanoidRootPart.CFrame
             wait()
         end
@@ -276,10 +293,16 @@ Troll:AddButton({
   	end    
 })
 
+local Cancel = Troll:AddSection({
+	Name = "Cancel"
+})
+
+
 Troll:AddButton({
 	Name = "Cancel",
 	Callback = function()
         Variables()
+        bang:Stop()
         game.Workspace.Gravity = 192.1
         und = true
         wait(2)
@@ -294,9 +317,32 @@ local Other = Window:MakeTab({
 	PremiumOnly = false
 })
 
+local Others = Other:AddSection({
+	Name = "Others"
+})
+
 Other:AddButton({
 	Name = "Refresh variables",
 	Callback = function()
         Variables()
   	end    
 })
+
+local Hubs = Other:AddSection({
+	Name = "Hubs"
+})
+
+Other:AddButton({
+	Name = "Infinite Yield",
+	Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/edgeiy/infiniteyield/master/source"))()
+  	end    
+})
+Other:AddButton({
+	Name = "Dark Dex",
+	Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
+  	end    
+})
+
+
