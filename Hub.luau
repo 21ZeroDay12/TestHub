@@ -1,7 +1,5 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-
-
 local Window = OrionLib:MakeWindow({Name = "Test", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
 local workspace
 local player
@@ -45,6 +43,7 @@ local function Find(Name)
                     Image = "rbxassetid://4483345998",
                     Time = 5
                 })
+                print(v)
                 return tostring(v)
             end
         end
@@ -240,7 +239,6 @@ Troll:AddButton({
 	Name = "Sit on",
 	Callback = function()
         --Variables()
-        print(playerName2)
         while und ~= true do
             game.Workspace.Gravity = 0
             character.Humanoid.Sit = true
@@ -256,11 +254,33 @@ Troll:AddButton({
         end
   	end    
 })
+Troll:AddButton({
+	Name = "Bang",
+	Callback = function()
+        --Variables()
+        print(playerName2)
+        bangAnim = Instance.new("Animation")
+        bangAnim.AnimationId = "rbxassetid://5918726674"
+        bang = character.Humanoid:LoadAnimation(bangAnim)
+        bang:Play(0.1, 1, 1)
+        bang:AdjustSpeed(1)
+        while und ~= true do
+            game.Workspace.Gravity = 0
+            humanoidRootPart.CFrame = game.Players[playerName2].Character.HumanoidRootPart.CFrame
+            wait()
+        end
+        if und then
+            game.Workspace.Gravity = 192.1
+            bang:Stop()
+        end
+  	end    
+})
 
 Troll:AddButton({
 	Name = "Cancel",
 	Callback = function()
         Variables()
+        game.Workspace.Gravity = 192.1
         und = true
         wait(2)
         und = false
