@@ -38,7 +38,13 @@ local duration = 0
 local function Find(Name)
     for i,v in pairs(character.Parent:GetDescendants()) do
         if v:IsA("Model") then
-            if string.find(tostring(v), Name) then
+            if string.find(tostring(v), Name) and v:FindFirstChild("HumanoidRootPart") then
+                OrionLib:MakeNotification({
+                    Name = "Player Founded!",
+                    Content = "Did you mean " .. tostring(v) .. "?",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
                 return tostring(v)
             end
         end
