@@ -1,11 +1,14 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
+
+
 local Window = OrionLib:MakeWindow({Name = "Test", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
 local workspace
 local player
 local character
 local humanoidRootPart
 local AR
+local Val
 function Variables()
     workspace = game.Workspace
     player = game.Players.LocalPlayer
@@ -14,13 +17,11 @@ function Variables()
     local Success, Data = pcall(function()
         if character["Local Ragdoll"].Disabled then
             AR:Set(true)
-            print("trued")
         else
             AR:Set(false)
-            print("falsed")
         end
     end)
-    print(Success,"abc ",Data)
+    --print(Success,"abc ",Data)
 end
 Variables()
 local TweenService = game:GetService("TweenService")
@@ -33,6 +34,17 @@ local playerName = ""
 local playerName2 = ""
 local und = false
 local duration = 0
+
+local function Find(Name)
+    for i,v in pairs(character.Parent:GetDescendants()) do
+        if v:IsA("Model") then
+            if string.find(tostring(v), Name) then
+                return tostring(v)
+            end
+        end
+    end
+end
+
 if game.GameId == 2007050448 then
     local Game = Window:MakeTab({
         Name = "Ragdoll Engine",
@@ -44,12 +56,12 @@ if game.GameId == 2007050448 then
         Name = "AntiRagdoll",
         Default = false,
         Callback = function(Value)
-            Variables()
             if Value then
                 character["Local Ragdoll"].Disabled = true
             else
                 character["Local Ragdoll"].Disabled = false
             end 
+        Variables()
         end    
     })
 
@@ -79,7 +91,6 @@ local WalkSpeed = Character:AddSlider({
 	Increment = 1,
 	ValueName = "WalkSpeed",
 	Callback = function(Value)
-        Variables()
 		character.Humanoid.WalkSpeed = Value
 	end    
 })
@@ -92,7 +103,6 @@ local JumpPower = Character:AddSlider({
 	Increment = 1,
 	ValueName = "JumpPower",
 	Callback = function(Value)
-        Variables()
         character.Humanoid.UseJumpPower = true
 		character.Humanoid.JumpPower = Value
 	end    
@@ -115,7 +125,7 @@ Character:AddButton({
 	Name = "Sit",
 	Callback = function()
         Variables()
-            character.Humanoid.Sit = true
+        character.Humanoid.Sit = true
   	end    
 })
 
@@ -132,7 +142,7 @@ Teleporting:AddTextbox({
 	TextDisappear = false,
 	Callback = function(Value)
         Variables()
-        playerName = Value -- Сохраняем значение в глобальную переменную
+        playerName = Find(Value) -- Сохраняем значение в глобальную переменную
 	end	  
 })
 
@@ -213,7 +223,7 @@ Troll:AddTextbox({
 	Default = "",
 	TextDisappear = false,
 	Callback = function(Value)
-        playerName2 = Value
+        playerName2 = Find(Value)
 	end	 
 })
 
@@ -223,11 +233,14 @@ Troll:AddTextbox({
 Troll:AddButton({
 	Name = "Sit on",
 	Callback = function()
-        Variables()
+        --Variables()
+        print(playerName2)
         while und ~= true do
             game.Workspace.Gravity = 0
             character.Humanoid.Sit = true
             character.HumanoidRootPart.CanCollide = false
+            character.LowerTorso.CanCollide = false
+            character.UpperTorso.CanCollide = false
             character.LowerTorso.CFrame = game.Players[playerName2].Character.Head.CFrame
             wait()
         end
