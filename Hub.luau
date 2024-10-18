@@ -30,10 +30,12 @@ local DWS = character.Humanoid.WalkSpeed
 
 -- Глобальные переменные для сохранения значений
 local playerName = ""
+local playerName2 = ""
+local und = false
 local duration = 0
 if game.GameId == 2007050448 then
     local Game = Window:MakeTab({
-        Name = "Game",
+        Name = "Ragdoll Engine",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
@@ -53,11 +55,13 @@ if game.GameId == 2007050448 then
 
 
 else
+
     local Null = Window:MakeTab({
         Name = "Unknown Game",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
+
 end
 
 local Character = Window:MakeTab({
@@ -197,6 +201,53 @@ Teleporting:AddButton({
             end)
   	end    
 })
+
+local Troll = Window:MakeTab({
+	Name = "Troll",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Troll:AddTextbox({
+	Name = "Player",
+	Default = "",
+	TextDisappear = false,
+	Callback = function(Value)
+        playerName2 = Value
+	end	 
+})
+
+
+
+
+Troll:AddButton({
+	Name = "Sit on",
+	Callback = function()
+        Variables()
+        while und ~= true do
+            game.Workspace.Gravity = 0
+            character.Humanoid.Sit = true
+            character.HumanoidRootPart.CanCollide = false
+            character.LowerTorso.CFrame = game.Players[playerName2].Character.Head.CFrame
+            wait()
+        end
+        if und then
+            character.Humanoid.Sit = false
+            game.Workspace.Gravity = 192.1
+        end
+  	end    
+})
+
+Troll:AddButton({
+	Name = "Cancel",
+	Callback = function()
+        Variables()
+        und = true
+        wait(2)
+        und = false
+  	end    
+})
+
 
 local Other = Window:MakeTab({
 	Name = "Other",
