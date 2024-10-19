@@ -281,8 +281,8 @@ Troll:AddButton({
         bang = character.Humanoid:LoadAnimation(bangAnim)
         bang:AdjustSpeed(1)
         game.Workspace.Gravity = 0
+        bang:Play(0.1, 1, 1)
         while und ~= true do
-            bang:Play(0.1, 1, 1)
             humanoidRootPart.CFrame = game.Players[playerName2].Character.HumanoidRootPart.CFrame
             wait()
         end
