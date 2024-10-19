@@ -1,265 +1,234 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local TweenService = game:GetService("TweenService")
+print("GOOGODFSOGOS")
+local Window = OrionLib:MakeWindow({
+    Name = "Test",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "OrionTest"
+})
 
-local Window = OrionLib:MakeWindow({Name = "Test", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
-local workspace
-local player
-local character
-local humanoidRootPart
+local workspace = game.Workspace
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
 local AR
-local Val
 local playerName = ""
 local playerName2 = ""
 local und = false
 local duration = 0
 local bang
 
-
-function Variables()
-    workspace = game.Workspace
-    player = game.Players.LocalPlayer
+local function updateCharacterVariables()
     character = player.Character or player.CharacterAdded:Wait()
     humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    local Success, Data = pcall(function()
-        if character["Local Ragdoll"].Disabled then
-            AR:Set(true)
-        else
-            AR:Set(false)
-        end
+
+    local success, data = pcall(function()
+        AR:Set(character["Local Ragdoll"].Disabled == false)
     end)
-    --print(Success,"abc ",Data)
 end
-Variables()
-local TweenService = game:GetService("TweenService")
+
+updateCharacterVariables()
 
 local DJP = character.Humanoid.JumpPower
 local DWS = character.Humanoid.WalkSpeed
 
--- Глобальные переменные для сохранения значений
-
-local function Find(Name)
-    Variables()
-    for i,v in pairs(character.Parent:GetDescendants()) do
-        if v:IsA("Model") then
-            if string.find(tostring(v), Name) and v:FindFirstChild("HumanoidRootPart") then
-                OrionLib:MakeNotification({
-                    Name = "Player Founded!",
-                    Content = "Did you mean " .. tostring(v) .. "?",
-                    Image = "rbxassetid://4483345998",
-                    Time = 5
-                })
-                print(v)
-                return tostring(v)
-            end
+local function findPlayer(Name)
+    updateCharacterVariables()
+    for _, v in pairs(character.Parent:GetDescendants()) do
+        if v:IsA("Model") and string.find(tostring(v), Name) and v:FindFirstChild("HumanoidRootPart") then
+            OrionLib:MakeNotification({
+                Name = "Player Found!",
+                Content = "Did you mean " .. tostring(v) .. "?",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            print(v)
+            return tostring(v)
         end
     end
 end
 
-if game.GameId == 2007050448 then
-    local Game = Window:MakeTab({
+local gameId = game.GameId
+local GameTab
+
+if gameId == 2007050448 then
+    GameTab = Window:MakeTab({
         Name = "Ragdoll Engine",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
 
-    AR = Game:AddToggle({
+    AR = GameTab:AddToggle({
         Name = "AntiRagdoll",
         Default = false,
-        Callback = function(Value)
-            if Value then
-                character["Local Ragdoll"].Disabled = true
-            else
-                character["Local Ragdoll"].Disabled = false
-            end 
-        Variables()
-        end    
+        Callback = function(value)
+            character["Local Ragdoll"].Disabled = not value
+            updateCharacterVariables()
+        end
     })
-
-
 else
-
-    local Null = Window:MakeTab({
-        Name = "Unknown Game",
+    GameTab = Window:MakeTab({
+        Name = gameId == 911750776 and "GAMEGAME" or "Unknown Game",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     })
-
 end
 
-local Character = Window:MakeTab({
-	Name = "Character",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
+-- Character Controls
+local CharacterTab = Window:MakeTab({
+    Name = "Character",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
 })
 
-local Humanoid = Character:AddSection({
-	Name = "Humanoid"
+local HumanoidSection = CharacterTab:AddSection({ Name = "Humanoid" })
+
+local WalkSpeedSlider = CharacterTab:AddSlider({
+    Name = "WalkSpeed",
+    Min = 0,
+    Max = 120,
+    Default = DWS,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    ValueName = "WalkSpeed",
+    Callback = function(value)
+        character.Humanoid.WalkSpeed = value
+    end
 })
 
-local WalkSpeed = Character:AddSlider({
-	Name = "WalkSpeed",
-	Min = 0,
-	Max = 120,
-	Default = DWS,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "WalkSpeed",
-	Callback = function(Value)
-		character.Humanoid.WalkSpeed = Value
-	end    
-})
-local JumpPower = Character:AddSlider({
-	Name = "JumpPower",
-	Min = 0,
-	Max = 680,
-	Default = DJP,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "JumpPower",
-	Callback = function(Value)
+local JumpPowerSlider = CharacterTab:AddSlider({
+    Name = "JumpPower",
+    Min = 0,
+    Max = 680,
+    Default = DJP,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    ValueName = "JumpPower",
+    Callback = function(value)
         character.Humanoid.UseJumpPower = true
-		character.Humanoid.JumpPower = Value
-	end    
+        character.Humanoid.JumpPower = value
+    end
 })
 
-Character:AddButton({
-	Name = "Set default",
-	Callback = function()
-        Variables()
-        WalkSpeed:Set(DWS)
-        JumpPower:Set(DJP)
-  	end    
+CharacterTab:AddButton({
+    Name = "Set Default",
+    Callback = function()
+        updateCharacterVariables()
+        WalkSpeedSlider:Set(DWS)
+        JumpPowerSlider:Set(DJP)
+    end
 })
 
-local Sit = Character:AddSection({
-	Name = "Sit"
-})
+local SitSection = CharacterTab:AddSection({ Name = "Sit" })
 
-Character:AddButton({
-	Name = "Sit",
-	Callback = function()
-        Variables()
+CharacterTab:AddButton({
+    Name = "Sit",
+    Callback = function()
+        updateCharacterVariables()
         character.Humanoid.Sit = true
-  	end    
+    end
 })
 
-local Teleporting = Window:MakeTab({
-	Name = "Teleporting",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
+-- Teleporting Tab
+local TeleportingTab = Window:MakeTab({
+    Name = "Teleporting",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
 })
 
-local Teleporting1 = Teleporting:AddSection({
-	Name = "Teleporting"
+local TeleportSection = TeleportingTab:AddSection({ Name = "Teleporting" })
+
+TeleportingTab:AddTextbox({
+    Name = "Name of Player",
+    Default = "",
+    TextDisappear = false,
+    Callback = function(value)
+        playerName = findPlayer(value)
+    end
 })
 
-Teleporting:AddTextbox({
-	Name = "Name of Player",
-	Default = "",
-	TextDisappear = false,
-	Callback = function(Value)
-        Variables()
-        playerName = Find(Value) -- Сохраняем значение в глобальную переменную
-	end	  
+TeleportingTab:AddTextbox({
+    Name = "Seconds",
+    Default = "",
+    TextDisappear = false,
+    Callback = function(value)
+        duration = tonumber(value) or 0
+    end
 })
 
-Teleporting:AddTextbox({
-	Name = "Seconds",
-	Default = "",
-	TextDisappear = false,
-	Callback = function(Value)
-        duration = tonumber(Value) or 0 -- Сохраняем значение в глобальную переменную и конвертируем в число
-	end	 
-})
+TeleportingTab:AddButton({
+    Name = "Goto",
+    Callback = function()
+        updateCharacterVariables()
+        local destination = game.Players[playerName].Character.HumanoidRootPart.Position
 
-
-
-
-Teleporting:AddButton({
-	Name = "Goto",
-	Callback = function()
-        Variables()
-        local destination = game.Players[playerName].Character.HumanoidRootPart.Position -- Используем сохранённое имя игрока
         local function setGravity(value)
             workspace.Gravity = value
         end
-        local tweenInfo = TweenInfo.new(
-            duration, -- Используем сохранённое время
-            Enum.EasingStyle.Linear,
-            Enum.EasingDirection.InOut,
-            0,
-            false,
-            1
-        )
-        local goal = {
-            CFrame = CFrame.new(destination)
-        }
+
+        local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        local goal = { CFrame = CFrame.new(destination) }
         humanoidRootPart.CanCollide = false
+
         local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
         tween.Completed:Connect(function()
             setGravity(196.1)
         end)
-        local function startMovement()
-            setGravity(0)
-            tween:Play()
-        end
-        startMovement()
-  	end    
+
+        setGravity(0)
+        tween:Play()
+    end
 })
 
-local Tool = Teleporting:AddSection({
-	Name = "Tool"
+local ToolSection = TeleportingTab:AddSection({ Name = "Tool" })
+
+TeleportingTab:AddButton({
+    Name = "Give Tool",
+    Callback = function()
+        updateCharacterVariables()
+        local mouse = player:GetMouse()
+        local tool = Instance.new("Tool")
+        tool.RequiresHandle = false
+        tool.Name = "Click to Teleport"
+        tool.Parent = player.Backpack
+
+        tool.Activated:Connect(function()
+            local pos = mouse.Hit
+            character.HumanoidRootPart.CFrame = CFrame.new(pos.X, pos.Y, pos.Z)
+        end)
+    end
 })
 
-
-Teleporting:AddButton({
-	Name = "Give tool",
-	Callback = function()
-            Variables()
-            mouse = game.Players.LocalPlayer:GetMouse()
-            local Charater = game.Players.LocalPlayer.Character
-            tool = Instance.new("Tool")
-            tool.RequiresHandle = false
-            tool.Name = "Кликать чтоб улетать"
-            tool.Parent = game:GetService("Players").LocalPlayer.Backpack
-            tool.Activated:connect(function()
-                local pos = mouse.Hit
-                pos = CFrame.new(pos.X,pos.Y,pos.Z)
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
-            end)
-  	end    
+-- Troll Tab
+local TrollTab = Window:MakeTab({
+    Name = "Troll",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
 })
 
-local Troll = Window:MakeTab({
-	Name = "Troll",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
+local PlayerSection = TrollTab:AddSection({ Name = "Player" })
+
+TrollTab:AddTextbox({
+    Name = "Player",
+    Default = "",
+    TextDisappear = false,
+    Callback = function(value)
+        playerName2 = findPlayer(value)
+    end
 })
 
-local Player = Troll:AddSection({
-	Name = "Player"
-})
+local ActionsSection = TrollTab:AddSection({ Name = "Actions" })
 
-Troll:AddTextbox({
-	Name = "Player",
-	Default = "",
-	TextDisappear = false,
-	Callback = function(Value)
-        playerName2 = Find(Value)
-	end	 
-})
-
-local Actions = Troll:AddSection({
-	Name = "Actions"
-})
-
-Troll:AddButton({
-	Name = "Sit on",
-	Callback = function()
-        Variables()
-        while und ~= true do
-            game.Workspace.Gravity = 0
+TrollTab:AddButton({
+    Name = "Sit On",
+    Callback = function()
+        updateCharacterVariables()
+        while not und do
+            workspace.Gravity = 0
             character.Humanoid.Sit = true
-            character.HumanoidRootPart.CanCollide = false
+            humanoidRootPart.CanCollide = false
             character.LowerTorso.CanCollide = false
             character.UpperTorso.CanCollide = false
             character.LowerTorso.CFrame = game.Players[playerName2].Character.Head.CFrame
@@ -267,82 +236,84 @@ Troll:AddButton({
         end
         if und then
             character.Humanoid.Sit = false
-            game.Workspace.Gravity = 192.1
+            workspace.Gravity = 192.1
         end
-  	end    
+    end
 })
-Troll:AddButton({
-	Name = "Bang",
-	Callback = function()
-        Variables()
+
+TrollTab:AddButton({
+    Name = "Bang",
+    Callback = function()
+        updateCharacterVariables()
         print(playerName2)
-        bangAnim = Instance.new("Animation")
+
+        local bangAnim = Instance.new("Animation")
         bangAnim.AnimationId = "rbxassetid://5918726674"
         bang = character.Humanoid:LoadAnimation(bangAnim)
         bang:AdjustSpeed(1)
-        game.Workspace.Gravity = 0
+        workspace.Gravity = 0
         bang:Play(0.1, 1, 1)
-        while und ~= true do
-            humanoidRootPart.CFrame = game.Players[playerName2].Character.HumanoidRootPart.CFrame
+        humanoidRootPart.CanCollide = false
+        character.LowerTorso.CanCollide = false
+        character.UpperTorso.CanCollide = false
+        while not und do
+            local targetCharacter = game.Players[playerName2].Character
+            if targetCharacter then
+                local behindOffset = targetCharacter.HumanoidRootPart.CFrame.LookVector * -1 -- Измените -5 на желаемое расстояние
+                humanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame + behindOffset
+            end
             wait()
         end
+
         if und then
-            game.Workspace.Gravity = 192.1
+            workspace.Gravity = 192.1
             bang:Stop()
         end
-  	end    
+    end
 })
 
-local Cancel = Troll:AddSection({
-	Name = "Cancel"
-})
+local CancelSection = TrollTab:AddSection({ Name = "Cancel" })
 
-
-Troll:AddButton({
-	Name = "Cancel",
-	Callback = function()
-        Variables()
-        bang:Stop()
-        game.Workspace.Gravity = 192.1
+TrollTab:AddButton({
+    Name = "Cancel",
+    Callback = function()
+        updateCharacterVariables()
+        if bang then bang:Stop() end
+        workspace.Gravity = 192.1
         und = true
         wait(2)
         und = false
-  	end    
+    end
 })
 
-
-local Other = Window:MakeTab({
-	Name = "Other",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
+-- Other Tab
+local OtherTab = Window:MakeTab({
+    Name = "Other",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
 })
 
-local Others = Other:AddSection({
-	Name = "Others"
+local OthersSection = OtherTab:AddSection({ Name = "Others" })
+
+OtherTab:AddButton({
+    Name = "Refresh Variables",
+    Callback = function()
+        updateCharacterVariables()
+    end
 })
 
-Other:AddButton({
-	Name = "Refresh variables",
-	Callback = function()
-        Variables()
-  	end    
-})
+local HubsSection = OtherTab:AddSection({ Name = "Hubs" })
 
-local Hubs = Other:AddSection({
-	Name = "Hubs"
-})
-
-Other:AddButton({
-	Name = "Infinite Yield",
-	Callback = function()
+OtherTab:AddButton({
+    Name = "Infinite Yield",
+    Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/edgeiy/infiniteyield/master/source"))()
-  	end    
+    end
 })
-Other:AddButton({
-	Name = "Dark Dex",
-	Callback = function()
+
+OtherTab:AddButton({
+    Name = "Dark Dex",
+    Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
-  	end    
+    end
 })
-
-
