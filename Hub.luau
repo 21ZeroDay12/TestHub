@@ -279,6 +279,9 @@ TrollTab:AddButton({
     Callback = function()
         updateCharacterVariables()
         if bang then bang:Stop() end
+        humanoidRootPart.CanCollide = true
+        character.LowerTorso.CanCollide = true
+        character.UpperTorso.CanCollide = true
         workspace.Gravity = 192.1
         und = true
         wait(2)
