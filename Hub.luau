@@ -1,5 +1,7 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 local TweenService = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")
+
 print("GOOGODFSOGOS")
 local Window = OrionLib:MakeWindow({
     Name = "Test",
@@ -61,7 +63,7 @@ if gameId == 2007050448 then
     })
 
     AR = GameTab:AddToggle({
-        Name = "AntiRagdoll",
+        Name = "CanRagdoll",
         Default = false,
         Callback = function(value)
             character["Local Ragdoll"].Disabled = not value
@@ -94,7 +96,11 @@ local WalkSpeedSlider = CharacterTab:AddSlider({
     Increment = 1,
     ValueName = "WalkSpeed",
     Callback = function(value)
-        character.Humanoid.WalkSpeed = value
+        if character ~= nil then
+            character.Humanoid.WalkSpeed = value
+        else
+            updateCharacterVariables()
+        end
     end
 })
 
@@ -107,8 +113,12 @@ local JumpPowerSlider = CharacterTab:AddSlider({
     Increment = 1,
     ValueName = "JumpPower",
     Callback = function(value)
-        character.Humanoid.UseJumpPower = true
-        character.Humanoid.JumpPower = value
+        if character ~= nil then
+            character.Humanoid.UseJumpPower = true
+            character.Humanoid.JumpPower = value
+        else
+            updateCharacterVariables()
+        end
     end
 })
 
@@ -224,14 +234,19 @@ local ActionsSection = TrollTab:AddSection({ Name = "Actions" })
 TrollTab:AddButton({
     Name = "Sit On",
     Callback = function()
+        humanoidRootPart.Anchored = true
         updateCharacterVariables()
         while not und do
             workspace.Gravity = 0
-            character.Humanoid.Sit = true
-            humanoidRootPart.CanCollide = false
-            character.LowerTorso.CanCollide = false
-            character.UpperTorso.CanCollide = false
-            character.LowerTorso.CFrame = game.Players[playerName2].Character.Head.CFrame
+            local success, data = pcall(function()
+                print(seccess, " ", data)
+                character.Humanoid.Sit = true
+                humanoidRootPart.CanCollide = false
+                character.LowerTorso.CanCollide = false
+                character.UpperTorso.CanCollide = false
+                character.LowerTorso.CFrame = game.Players[playerName2].Character.Head.CFrame
+                humanoidRootPart.Anchored = false
+            end)
             wait()
         end
         if und then
@@ -244,6 +259,7 @@ TrollTab:AddButton({
 TrollTab:AddButton({
     Name = "Bang",
     Callback = function()
+        humanoidRootPart.Anchored = true
         updateCharacterVariables()
         print(playerName2)
 
@@ -257,11 +273,14 @@ TrollTab:AddButton({
         character.LowerTorso.CanCollide = false
         character.UpperTorso.CanCollide = false
         while not und do
-            local targetCharacter = game.Players[playerName2].Character
-            if targetCharacter then
-                local behindOffset = targetCharacter.HumanoidRootPart.CFrame.LookVector * -1 -- Измените -5 на желаемое расстояние
-                humanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame + behindOffset
-            end
+            local success, data = pcall(function()
+                local targetCharacter = game.Players[playerName2].Character
+                if targetCharacter then
+                    humanoidRootPart.Anchored = false
+                    local behindOffset = targetCharacter.HumanoidRootPart.CFrame.LookVector * -1
+                    humanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame + behindOffset
+                end
+            end)
             wait()
         end
 
@@ -289,6 +308,24 @@ TrollTab:AddButton({
     end
 })
 
+local UnTrollSection = TrollTab:AddSection({ Name = "AntiTroll" })
+
+TrollTab:AddButton({
+    Name = "AntiBang, AntiSitOn",
+    Callback = function()
+        local AfterFPDH = game.Workspace.FallenPartsDestroyHeight
+        local AfterCFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+
+        game.Workspace.FallenPartsDestroyHeight = game.Workspace.FallenPartsDestroyHeight - 10000
+        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0,AfterFPDH-5000,0)
+        wait(2)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = AfterCFrame
+        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+        game.Workspace.FallenPartsDestroyHeight = AfterFPDH
+    end
+})
+
 -- Other Tab
 local OtherTab = Window:MakeTab({
     Name = "Other",
@@ -302,6 +339,13 @@ OtherTab:AddButton({
     Name = "Refresh Variables",
     Callback = function()
         updateCharacterVariables()
+    end
+})
+
+OtherTab:AddButton({
+    Name = "RejoinServer",
+    Callback = function()
+        TeleportService:TeleportToPlaceInstance(game["PlaceId"], game["JobId"])
     end
 })
 
