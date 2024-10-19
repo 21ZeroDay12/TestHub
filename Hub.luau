@@ -1,4 +1,3 @@
-
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
 local Window = OrionLib:MakeWindow({Name = "Test", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
@@ -280,10 +279,10 @@ Troll:AddButton({
         bangAnim = Instance.new("Animation")
         bangAnim.AnimationId = "rbxassetid://5918726674"
         bang = character.Humanoid:LoadAnimation(bangAnim)
-        bang:Play(0.1, 1, 1)
         bang:AdjustSpeed(1)
         game.Workspace.Gravity = 0
         while und ~= true do
+            bang:Play(0.1, 1, 1)
             humanoidRootPart.CFrame = game.Players[playerName2].Character.HumanoidRootPart.CFrame
             wait()
         end
@@ -345,4 +344,5 @@ Other:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
   	end    
 })
+
 
