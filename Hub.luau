@@ -307,7 +307,7 @@ TrollTab:AddButton({
         bangAnim.AnimationId = "rbxassetid://5918726674"
         bang = character.Humanoid:LoadAnimation(bangAnim)
         bang:AdjustSpeed(1)
-        --workspace.Gravity = 0
+        workspace.Gravity = 0
         if bang ~= nil then
             bang:Stop()
         end
