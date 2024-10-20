@@ -239,7 +239,9 @@ TrollTab:AddButton({
         while not und do
             workspace.Gravity = 0
             local success, data = pcall(function()
-                print(seccess, " ", data)
+                if not success then
+                    print(success, " ", data)
+                end
                 character.Humanoid.Sit = true
                 humanoidRootPart.CanCollide = false
                 character.LowerTorso.CanCollide = false
@@ -259,8 +261,8 @@ TrollTab:AddButton({
 TrollTab:AddButton({
     Name = "Bang",
     Callback = function()
-        humanoidRootPart.Anchored = true
         updateCharacterVariables()
+        humanoidRootPart.Anchored = true
         print(playerName2)
 
         local bangAnim = Instance.new("Animation")
@@ -274,6 +276,9 @@ TrollTab:AddButton({
         character.UpperTorso.CanCollide = false
         while not und do
             local success, data = pcall(function()
+                if not success then
+                    print(success, " ", data)
+                end
                 local targetCharacter = game.Players[playerName2].Character
                 if targetCharacter then
                     humanoidRootPart.Anchored = false
@@ -316,12 +321,14 @@ TrollTab:AddButton({
         local AfterFPDH = game.Workspace.FallenPartsDestroyHeight
         local AfterCFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 
-        game.Workspace.FallenPartsDestroyHeight = game.Workspace.FallenPartsDestroyHeight - 10000
-        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+        game.Workspace.FallenPartsDestroyHeight = game.Workspace.FallenPartsDestroyHeight - 10000        
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0,AfterFPDH-5000,0)
+        wait()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
         wait(2)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = AfterCFrame
         game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+        wait()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = AfterCFrame
         game.Workspace.FallenPartsDestroyHeight = AfterFPDH
     end
 })
