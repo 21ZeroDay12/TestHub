@@ -21,6 +21,8 @@ local playerName2 = ""
 local und = false
 local duration = 0
 local bang
+local AfterFPDH = game.Workspace.FallenPartsDestroyHeight
+game.Workspace.FallenPartsDestroyHeight = AfterFPDH - 100000
 
 local function updateCharacterVariables()
     character = player.Character or player.CharacterAdded:Wait()
@@ -29,6 +31,24 @@ local function updateCharacterVariables()
     local success, data = pcall(function()
         AR:Set(character["Local Ragdoll"].Disabled == false)
     end)
+end
+local function Collision(turn)
+    if character == nil and humanoidRootPart == nil then
+        updateCharacterVariables()
+    end
+    for i,v in pairs(character:GetDescendants()) do
+        if v:FindFirstChild("CanCollide") then
+            v.CanCollide = turn
+        end
+    end
+end
+local function Cancel()
+    updateCharacterVariables()
+    if bang then bang:Stop() end
+    Collision(true)
+    workspace.Gravity = 192.1
+    humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0,0,0)
+    und = true
 end
 
 updateCharacterVariables()
@@ -66,7 +86,7 @@ if gameId == 2007050448 then
         Name = "CanRagdoll",
         Default = false,
         Callback = function(value)
-            character["Local Ragdoll"].Disabled = not value
+            game.Players.LocalPlayer.Character["Local Ragdoll"].Disabled = not value
             updateCharacterVariables()
         end
     })
@@ -234,20 +254,36 @@ local ActionsSection = TrollTab:AddSection({ Name = "Actions" })
 TrollTab:AddButton({
     Name = "Sit On",
     Callback = function()
-        humanoidRootPart.Anchored = true
+        und = false
         updateCharacterVariables()
         while not und do
+            humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0,0,0)
+            if game.Players:FindFirstChild(playerName2) == nil then
+                print("сдох")
+                Cancel()
+            end
+            if character == nil and humanoidRootPart == nil then
+                updateCharacterVariables()
+            end
             workspace.Gravity = 0
             local success, data = pcall(function()
-                if not success then
+                if success ~= nil then
                     print(success, " ", data)
                 end
                 character.Humanoid.Sit = true
-                humanoidRootPart.CanCollide = false
-                character.LowerTorso.CanCollide = false
-                character.UpperTorso.CanCollide = false
-                character.LowerTorso.CFrame = game.Players[playerName2].Character.Head.CFrame
-                humanoidRootPart.Anchored = false
+                Collision(false)
+                if character.HumanoidRootPart.CFrame.Y <= AfterFPDH then
+                    character.LowerTorso.CFrame = CFrame.new(0,100,0)
+                    OrionLib:MakeNotification({
+                        Name = "Sit on",
+                        Content = "Player tried to AntiSit you!",
+                        Image = "rbxassetid://4483345998",
+                        Time = 5
+                    })
+                else
+                    print("123")
+                    character.LowerTorso.CFrame = game.Players[playerName2].Character.Head.CFrame
+                end
             end)
             wait()
         end
@@ -261,37 +297,55 @@ TrollTab:AddButton({
 TrollTab:AddButton({
     Name = "Bang",
     Callback = function()
+        und = false
+        if character == nil and humanoidRootPart == nil then
+            updateCharacterVariables()
+        end
         updateCharacterVariables()
-        humanoidRootPart.Anchored = true
-        print(playerName2)
 
         local bangAnim = Instance.new("Animation")
         bangAnim.AnimationId = "rbxassetid://5918726674"
         bang = character.Humanoid:LoadAnimation(bangAnim)
         bang:AdjustSpeed(1)
-        workspace.Gravity = 0
+        --workspace.Gravity = 0
+        if bang ~= nil then
+            bang:Stop()
+        end
         bang:Play(0.1, 1, 1)
-        humanoidRootPart.CanCollide = false
-        character.LowerTorso.CanCollide = false
-        character.UpperTorso.CanCollide = false
+        Collision(false)
         while not und do
+            humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0,0,0)
+            if game.Players:FindFirstChild(playerName2) == nil then
+                print("сдох")
+                Cancel()
+            end
+            if character == nil and humanoidRootPart == nil then
+                updateCharacterVariables()
+            end
+            wait()
             local success, data = pcall(function()
-                if not success then
+                if success ~= nil then
                     print(success, " ", data)
                 end
                 local targetCharacter = game.Players[playerName2].Character
                 if targetCharacter then
-                    humanoidRootPart.Anchored = false
-                    local behindOffset = targetCharacter.HumanoidRootPart.CFrame.LookVector * -1
-                    humanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame + behindOffset
+                    print(humanoidRootPart.CFrame.Y <= AfterFPDH)
+                    if humanoidRootPart.CFrame.Y <= AfterFPDH then
+                        print(321)
+                        character.LowerTorso.CFrame = CFrame.new(0,100,0)
+                        OrionLib:MakeNotification({
+                            Name = "Bang",
+                            Content = "Player tried to AntiBang you!",
+                            Image = "rbxassetid://4483345998",
+                            Time = 5
+                        })
+                    else
+                        print("123")
+                        local behindOffset = targetCharacter.HumanoidRootPart.CFrame.LookVector * -1
+                        humanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame + behindOffset
+                    end
                 end
             end)
-            wait()
-        end
-
-        if und then
-            workspace.Gravity = 192.1
-            bang:Stop()
         end
     end
 })
@@ -301,15 +355,7 @@ local CancelSection = TrollTab:AddSection({ Name = "Cancel" })
 TrollTab:AddButton({
     Name = "Cancel",
     Callback = function()
-        updateCharacterVariables()
-        if bang then bang:Stop() end
-        humanoidRootPart.CanCollide = true
-        character.LowerTorso.CanCollide = true
-        character.UpperTorso.CanCollide = true
-        workspace.Gravity = 192.1
-        und = true
-        wait(2)
-        und = false
+        Cancel()
     end
 })
 
@@ -318,7 +364,7 @@ local UnTrollSection = TrollTab:AddSection({ Name = "AntiTroll" })
 TrollTab:AddButton({
     Name = "AntiBang, AntiSitOn",
     Callback = function()
-        local AfterFPDH = game.Workspace.FallenPartsDestroyHeight
+        AfterFPDH = game.Workspace.FallenPartsDestroyHeight
         local AfterCFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 
         game.Workspace.FallenPartsDestroyHeight = game.Workspace.FallenPartsDestroyHeight - 10000        
