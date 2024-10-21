@@ -272,7 +272,7 @@ TrollTab:AddButton({
                 end
                 character.Humanoid.Sit = true
                 Collision(false)
-                if character.HumanoidRootPart.CFrame.Y <= AfterFPDH then
+                if character.HumanoidRootPart.CFrame.Y <= AfterFPDH + 500 then
                     character.LowerTorso.CFrame = CFrame.new(0,100,0)
                     OrionLib:MakeNotification({
                         Name = "Sit on",
@@ -329,9 +329,7 @@ TrollTab:AddButton({
                 end
                 local targetCharacter = game.Players[playerName2].Character
                 if targetCharacter then
-                    print(humanoidRootPart.CFrame.Y <= AfterFPDH)
-                    if humanoidRootPart.CFrame.Y <= AfterFPDH then
-                        print(321)
+                    if humanoidRootPart.CFrame.Y <= AfterFPDH + 500 then
                         character.LowerTorso.CFrame = CFrame.new(0,100,0)
                         OrionLib:MakeNotification({
                             Name = "Bang",
