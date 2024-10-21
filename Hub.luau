@@ -272,8 +272,24 @@ TrollTab:AddButton({
                 end
                 character.Humanoid.Sit = true
                 Collision(false)
-                if character.HumanoidRootPart.CFrame.Y <= AfterFPDH + 500 then
-                    character.LowerTorso.CFrame = CFrame.new(0,100,0)
+                if character.HumanoidRootPart.CFrame.Y <= AfterFPDH then
+                    local destination = 0
+
+                    local function setGravity(value)
+                        workspace.Gravity = value
+                    end
+
+                    local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+                    local goal = { CFrame = CFrame.new(0, destination, 0) }
+                    humanoidRootPart.CanCollide = false
+
+                    local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+                    tween.Completed:Connect(function()
+                        setGravity(196.1)
+                    end)
+
+                    setGravity(0)
+                    tween:Play()
                     OrionLib:MakeNotification({
                         Name = "Sit on",
                         Content = "Player tried to AntiSit you!",
@@ -330,7 +346,23 @@ TrollTab:AddButton({
                 local targetCharacter = game.Players[playerName2].Character
                 if targetCharacter then
                     if humanoidRootPart.CFrame.Y <= AfterFPDH + 500 then
-                        character.LowerTorso.CFrame = CFrame.new(0,100,0)
+                            local destination = 0
+
+                            local function setGravity(value)
+                                workspace.Gravity = value
+                            end
+
+                            local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+                            local goal = { CFrame = CFrame.new(0, destination, 0) }
+                            humanoidRootPart.CanCollide = false
+
+                            local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+                            tween.Completed:Connect(function()
+                                setGravity(196.1)
+                            end)
+
+                            setGravity(0)
+                            tween:Play()
                         OrionLib:MakeNotification({
                             Name = "Bang",
                             Content = "Player tried to AntiBang you!",
@@ -364,16 +396,48 @@ TrollTab:AddButton({
     Callback = function()
         AfterFPDH = game.Workspace.FallenPartsDestroyHeight
         local AfterCFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-
+        humanoidRootPart.Anchored = false
         game.Workspace.FallenPartsDestroyHeight = game.Workspace.FallenPartsDestroyHeight - 10000        
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0,AfterFPDH-5000,0)
-        wait()
-        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-        wait(2)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
-        wait()
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = AfterCFrame
-        game.Workspace.FallenPartsDestroyHeight = AfterFPDH
+        
+        local destination = AfterFPDH - 100
+        print(game.Workspace.FallenPartsDestroyHeight)
+        print(destination)
+        local function setGravity(value)
+            workspace.Gravity = value
+        end
+
+        local tweenInfo = TweenInfo.new(10, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        local goal = { CFrame = CFrame.new(0, destination, 0) }
+        humanoidRootPart.CanCollide = false
+
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+        tween.Completed:Connect(function()
+            setGravity(196.1)
+        end)
+
+        setGravity(0)
+        tween:Play()
+
+        wait(10)
+
+        local destination = 0
+
+        local function setGravity(value)
+            workspace.Gravity = value
+        end
+
+        local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        local goal = { CFrame = CFrame.new(0, destination, 0) }
+        humanoidRootPart.CanCollide = false
+
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+        tween.Completed:Connect(function()
+            setGravity(196.1)
+        end)
+
+        setGravity(0)
+        tween:Play()
+
     end
 })
 
