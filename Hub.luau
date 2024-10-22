@@ -1,6 +1,7 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
+local UserInputService = game:GetService("UserInputService")
 
 print("GOOGODFSOGOS")
 local Window = OrionLib:MakeWindow({
@@ -22,7 +23,8 @@ local und = false
 local duration = 0
 local bang
 local AfterFPDH = game.Workspace.FallenPartsDestroyHeight
-game.Workspace.FallenPartsDestroyHeight = AfterFPDH - 100000
+local speed
+local toggle
 
 local function updateCharacterVariables()
     character = player.Character or player.CharacterAdded:Wait()
@@ -48,8 +50,11 @@ local function Cancel()
     Collision(true)
     workspace.Gravity = 192.1
     humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0,0,0)
+    print(AfterFPDH)
+    game.Workspace.FallenPartsDestroyHeight = AfterFPDH
     und = true
 end
+Cancel()
 
 updateCharacterVariables()
 
@@ -72,6 +77,40 @@ local function findPlayer(Name)
     end
 end
 
+local function updateVelocity(direction)
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") thenВШ
+        local humanoidRootPart = character.HumanoidRootPart
+        direction
+        humanoidRootPart.Velocity = humanoidRootPart.Velocity + direction * speed
+    end
+end
+
+local function WhenKeyHold(keyCode, callback)
+    local isKeyPressed = false
+
+    local function onKeyHold()
+        while isKeyPressed do
+            callback()
+            wait(0.1) -- Задержка для предотвращения слишком быстрого выполнения
+        end
+    end
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keyCode then
+            isKeyPressed = true
+            onKeyHold()
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keyCode then
+            isKeyPressed = false
+        end
+    end)
+end
+
+
 local gameId = game.GameId
 local GameTab
 
@@ -91,6 +130,41 @@ if gameId == 2007050448 then
         end
     })
 else
+
+    if gameId == 1016936714 then
+        GameTab = Window:MakeTab({
+            Name = "Your Blizzare Adventure",
+            Icon = "rbxassetid://4483345998",
+            PremiumOnly = false
+        })
+
+        GameTab:AddToggle({
+            Name = "Toggle WalkSpeed",
+            Default = false,
+            Callback = function(value)
+                toggle = value
+            end
+        })
+
+        local WalkSpeedSlider = GameTab:AddSlider({
+            Name = "WalkSpeed (Only W)",
+            Min = 0,
+            Max = 120,
+            Default = DWS,
+            Color = Color3.fromRGB(255, 255, 255),
+            Increment = 1,
+            ValueName = "WalkSpeed",
+            Callback = function(value)
+                speed = value
+            end
+        })
+        WhenKeyHold(Enum.KeyCode.W, function()
+            if toggle then
+                local lookDirection = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector
+                updateVelocity(lookDirection)
+            end
+        end)
+    end
     GameTab = Window:MakeTab({
         Name = gameId == 911750776 and "GAMEGAME" or "Unknown Game",
         Icon = "rbxassetid://4483345998",
@@ -198,7 +272,7 @@ TeleportingTab:AddButton({
             workspace.Gravity = value
         end
 
-        local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false, 1)
         local goal = { CFrame = CFrame.new(destination) }
         humanoidRootPart.CanCollide = false
 
@@ -266,6 +340,7 @@ TrollTab:AddButton({
                 updateCharacterVariables()
             end
             workspace.Gravity = 0
+            game.Workspace.FallenPartsDestroyHeight = AfterFPDH - 5000
             local success, data = pcall(function()
                 if success ~= nil then
                     print(success, " ", data)
@@ -273,7 +348,7 @@ TrollTab:AddButton({
                 character.Humanoid.Sit = true
                 Collision(false)
                 if character.HumanoidRootPart.CFrame.Y <= AfterFPDH then
-                    local destination = 0
+                    local destination = 10
 
                     local function setGravity(value)
                         workspace.Gravity = value
@@ -329,6 +404,7 @@ TrollTab:AddButton({
         end
         bang:Play(0.1, 1, 1)
         Collision(false)
+        game.Workspace.FallenPartsDestroyHeight = AfterFPDH - 5000
         while not und do
             humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0,0,0)
             if game.Players:FindFirstChild(playerName2) == nil then
@@ -346,7 +422,7 @@ TrollTab:AddButton({
                 local targetCharacter = game.Players[playerName2].Character
                 if targetCharacter then
                     if humanoidRootPart.CFrame.Y <= AfterFPDH + 500 then
-                            local destination = 0
+                            local destination = 10
 
                             local function setGravity(value)
                                 workspace.Gravity = value
@@ -406,7 +482,7 @@ TrollTab:AddButton({
             workspace.Gravity = value
         end
 
-        local tweenInfo = TweenInfo.new(10, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+        local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
         local goal = { CFrame = CFrame.new(0, destination, 0) }
         humanoidRootPart.CanCollide = false
 
@@ -417,10 +493,11 @@ TrollTab:AddButton({
 
         setGravity(0)
         tween:Play()
+        humanoidRootPart.Anchored = true
+        wait(3)
+        humanoidRootPart.Anchored = false
 
-        wait(10)
-
-        local destination = 0
+        local destination = 10
 
         local function setGravity(value)
             workspace.Gravity = value
@@ -437,7 +514,7 @@ TrollTab:AddButton({
 
         setGravity(0)
         tween:Play()
-
+        game.Workspace.FallenPartsDestroyHeight = AfterFPDH
     end
 })
 
