@@ -79,9 +79,8 @@ end
 
 local function updateVelocity(direction)
     local character = game.Players.LocalPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") thenВШ
+    if character and character:FindFirstChild("HumanoidRootPart") then
         local humanoidRootPart = character.HumanoidRootPart
-        direction
         humanoidRootPart.Velocity = humanoidRootPart.Velocity + direction * speed
     end
 end
@@ -164,6 +163,16 @@ else
                 updateVelocity(lookDirection)
             end
         end)
+
+        local SBRSection = GameTab:AddSection({ Name = "SBR" })
+
+        GameTab:AddButton({
+            Name = "Destroy Barriers",
+            Callback = function()
+                updateCharacterVariables()
+                workspace.Barriers:Destroy()
+            end
+        })   
     end
     GameTab = Window:MakeTab({
         Name = gameId == 911750776 and "GAMEGAME" or "Unknown Game",
