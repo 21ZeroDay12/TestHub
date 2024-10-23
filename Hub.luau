@@ -167,18 +167,40 @@ else
         local SBRSection = GameTab:AddSection({ Name = "SBR" })
 
         GameTab:AddButton({
-            Name = "Destroy Barriers",
+            Name = "Destroy All Barriers",
             Callback = function()
                 updateCharacterVariables()
                 workspace.Barriers:Destroy()
             end
         })   
+        GameTab:AddDropdown({
+            Name = "Destroy Barriers",
+            Default = "Default",
+            Options = {"Default", "1", "2", "3", "4"},
+            Callback = function(Value)
+                updateCharacterVariables()
+                if Value == "1" then
+                    workspace:FindFirstChild("Barriers"):FindFirstChild("1"):Destroy()
+                end
+                if Value == "2" then
+                    workspace:FindFirstChild("Barriers"):FindFirstChild("2"):Destroy()
+                end
+                if Value == "3" then
+                    workspace:FindFirstChild("Barriers"):FindFirstChild("3"):Destroy()
+                end
+                if Value == "4" then
+                    workspace:FindFirstChild("Barriers"):FindFirstChild("4"):Destroy()
+                end
+            end    
+        })
+
+    else
+        GameTab = Window:MakeTab({
+            Name = gameId == 911750776 and "GAMEGAME" or "Unknown Game",
+            Icon = "rbxassetid://4483345998",
+            PremiumOnly = false
+        })
     end
-    GameTab = Window:MakeTab({
-        Name = gameId == 911750776 and "GAMEGAME" or "Unknown Game",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    })
 end
 
 -- Character Controls
