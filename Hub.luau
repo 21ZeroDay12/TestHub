@@ -205,12 +205,32 @@ else
                 Name = "FarmDoors",
                 Callback = function()
                     updateCharacterVariables()
+                    local doorslooted = 0
+
                     for i,v in pairs(game.Workspace.Houses:GetDescendants()) do
                         if v.Name == "DoorInnerTouch" then
+                            doorslooted+=1
                             v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+                            wait()
+                            v.Parent.Parent:Destroy()
                         end
                     end
                     wait(1)
+                    if doorslooted ~= 0 then
+                        OrionLib:MakeNotification({
+                            Name = "Doors Found!",
+                            Content = "Doors Looted: " .. tostring(doorslooted),
+                            Image = "rbxassetid://4483345998",
+                            Time = 5
+                        })
+                    else
+                        OrionLib:MakeNotification({
+                            Name = "              Doors Foundn't!",
+                            Content = "                                              😥",
+                            Image = "rbxassetid://4483345998",
+                            Time = 5
+                        })
+                    end
                     game.Players.LocalPlayer.Character.Humanoid.Health = 0
                 end
             })
