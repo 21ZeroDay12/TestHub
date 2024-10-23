@@ -195,11 +195,33 @@ else
         })
 
     else
-        GameTab = Window:MakeTab({
-            Name = gameId == 911750776 and "GAMEGAME" or "Unknown Game",
-            Icon = "rbxassetid://4483345998",
-            PremiumOnly = false
-        })
+        if gameId == 210851291 then
+            GameTab = Window:MakeTab({
+                Name = "Build A Boat",
+                Icon = "rbxassetid://4483345998",
+                PremiumOnly = false
+            })
+            GameTab:AddButton({
+                Name = "FarmDoors",
+                Callback = function()
+                    updateCharacterVariables()
+                    for i,v in pairs(game.Workspace.Houses:GetDescendants()) do
+                        if v.Name == "DoorInnerTouch" then
+                            v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+                        end
+                    end
+                    wait(1)
+                    game.Players.LocalPlayer.Character.Humanoid.Health = 0
+                end
+            })
+            
+        else
+            GameTab = Window:MakeTab({
+                Name = gameId == 911750776 and "GAMEGAME" or "Unknown Game",
+                Icon = "rbxassetid://4483345998",
+                PremiumOnly = false
+            })
+        end
     end
 end
 
