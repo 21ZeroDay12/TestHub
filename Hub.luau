@@ -176,7 +176,7 @@ else
         GameTab:AddDropdown({
             Name = "Destroy Barriers",
             Default = "Default",
-            Options = {"Default", "1", "2", "3", "4"},
+            Options = {"Default", "StartBarrier", "1", "2", "3", "EndBarrier"},
             Callback = function(Value)
                 updateCharacterVariables()
                 if Value == "1" then
@@ -188,8 +188,11 @@ else
                 if Value == "3" then
                     workspace:FindFirstChild("Barriers"):FindFirstChild("3"):Destroy()
                 end
-                if Value == "4" then
+                if Value == "EndBarrier" then
                     workspace:FindFirstChild("Barriers"):FindFirstChild("4"):Destroy()
+                end
+                if Value == "StartBarrier" then
+                    workspace:FindFirstChild("Barriers"):FindFirstChild("StartBarrier"):Destroy()
                 end
             end    
         })
@@ -215,7 +218,7 @@ else
                             v.Parent.Parent:Destroy()
                         end
                     end
-                    wait(1)
+                    --game.Players.LocalPlayer.Character.Humanoid.Health = 0
                     if doorslooted ~= 0 then
                         OrionLib:MakeNotification({
                             Name = "Doors Found!",
@@ -231,7 +234,6 @@ else
                             Time = 5
                         })
                     end
-                    game.Players.LocalPlayer.Character.Humanoid.Health = 0
                 end
             })
             
